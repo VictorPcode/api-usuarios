@@ -1,33 +1,38 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const userRoutes = require('./routes/userRoutes');
+const express = require("express");
+const bodyParser = require("body-parser");
+const userRoutes = require("./routes/userRoutes");
+const swaggerDocs = require("./swagger");
 
 const app = express();
 
-// Middleware para parsear el cuerpo de las solicitudes
+// Middleware
 app.use(bodyParser.json());
 
 // Rutas
-app.use('/api', userRoutes); // Esto hace que todas las rutas de userRoutes empiecen con /api
+app.use("/api", userRoutes);
 
-// Ruta base (opcional)
-app.get('/', (req, res) => {
-  res.send('Bienvenido a la API REST con Express');
+// Swagger
+swaggerDocs(app);
+
+// Ruta base
+app.get("/", (req, res) => {
+  res.sendFile("index.html", { root: "public" });
 });
 
 // Manejo de errores 404
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Ruta no encontrada' });
+  res.status(404).json({ message: "Ruta no encontrada" });
 });
 
-// Middleware para manejo de errores
+// Middleware errores
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Error del servidor' });
+  res.status(500).json({ message: "Error del servidor" });
 });
 
-// Iniciar servidor
+// Servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Swagger disponible en http://localhost:${PORT}/api-docs`);
 });
